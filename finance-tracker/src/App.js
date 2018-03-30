@@ -1,13 +1,33 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import './App.css';
+import './Styles/App.css';
 
 class App extends Component {
   constructor(props){
     super(props);
     this.state = {list: [],
-      values: ''
+      values: '',
+      isLoaded: false
     }
+  }
+
+  componentDidMount() {
+    fetch()
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            items: result.items
+          })
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          })
+        }
+      )
   }
 
   handleButtonPressed = () =>{
