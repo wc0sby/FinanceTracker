@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './Styles/App.css';
-import Resuts from './Components/results'
-import Search from './Components/form'
+import Resuts from './Components/results';
+import Search from './Components/form';
+import GrubBar from './Components/appbar';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -14,8 +15,12 @@ class App extends Component {
     this.state = {restaurants: [],
       values: '',
       isLoaded: false,
-
-
+      drawerOpen: true,
+      lat: '',
+      long: '',
+      cuisines: [],
+      cuisineID: 168,
+      cuisineDesired: 0
     }
   }
 
@@ -35,57 +40,105 @@ class App extends Component {
             //   console.log(position.coords.latitude, position.coords.longitude)
             //   this.setState({lat: position.coords.latitude, long: position.coords.longitude})
             // })
-          }
-        )
-         .then(
-           (data)=> {   
-            apiHeaders.append('user-key', '0ceda440b15e277c481abff59a44f63f')
+        })
+      .then(
+          (data)=> {   
             
-            // fetch('https://developers.zomato.com/api/v2.1/cuisines?city_id=278',
-            fetch(`https://developers.zomato.com/api/v2.1/search?lat=${this.state.lat}&lon=${this.state.long}&cuisines=168&sort=rating&order=desc`,
-            {headers: apiHeaders})
-            .then(res => res.json())
-            .then(
-              (result) => {
-                const restArr = []
-                result.restaurants.forEach((type)=>{
-                  restArr.push(type.restaurant)
-                })
-                this.setState({
-                  isLoaded: true,
-                  restaurants: restArr
-                })
-              },
-              (error) => {
-                this.setState({
-                  isLoaded: true,
-                  error
-                })
-              }
-            )
-            .then(
-              (categories)=>{
-                fetch('https://developers.zomato.com/api/v2.1/categories',
-              {headers:apiHeaders})
-            .then(res=>res.json())
-            .then(
-              (result)=>{
-                const catArr = []
-                result.categories.forEach((category)=>{
-                  catArr.push(category.categories.name)
-                })
-                this.setState({categories: catArr})
-              }
-            )
-              }
-            )
+      apiHeaders.append('user-key', '0ceda440b15e277c481abff59a44f63f')
+      // fetch('https://developers.zomato.com/api/v2.1/cuisines?city_id=278',
+      fetch(`https://developers.zomato.com/api/v2.1/search?count=100&lat=${this.state.lat}&lon=${this.state.long}&cuisines=${this.state.cuisineID}&sort=rating&order=desc`,
+      {headers: apiHeaders})
+      .then(res => res.json())
+      .then(
+        (result) => {
+          const restArr = []
+          result.restaurants.forEach((type)=>{
+            restArr.push(type.restaurant)
           })
+          this.setState({
+            isLoaded: true,
+            restaurants: restArr
+          })
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          })
+        }
+      )
+      .then(
+        (cuisines)=>
+        fetch(`https://developers.zomato.com/api/v2.1/cuisines?lat=${this.state.lat}&lon=${this.state.long}&`,
+        {headers:apiHeaders})
+      .then(res=>res.json())
+      .then(
+        (result)=>{
+          const cuisineArr = []
+          result.cuisines.forEach((cuisine)=>{
+            cuisineArr.push(cuisine.cuisine)
+          })
+          this.setState({cuisines: cuisineArr})
+        }
+      )
+       )
+   })
   }
 
+  handleNewSearchCall = () =>{
+    const apiHeaders = new Headers()
+    apiHeaders.append('user-key', '0ceda440b15e277c481abff59a44f63f')
+    // fetch('https://developers.zomato.com/api/v2.1/cuisines?city_id=278',
+    fetch(`https://developers.zomato.com/api/v2.1/search?count=100&lat=${this.state.lat}&lon=${this.state.long}&cuisines=${this.state.cuisineID}&sort=rating&order=desc`,
+    {headers: apiHeaders})
+    .then(res => res.json())
+    .then(
+      (result) => {
+        const restArr = []
+        result.restaurants.forEach((type)=>{
+          restArr.push(type.restaurant)
+        })
+        this.setState({
+          isLoaded: true,
+          restaurants: restArr
+        })
+      },
+      (error) => {
+        this.setState({
+          isLoaded: true,
+          error
+        })
+      }
+    )
+  }
 
+  handleCategoryClicked = (event, index, value) =>{this.setState({cuisineDesired: index, cuisineID: this.state.cuisines[index].cuisine_id})}
 
+  handleToggle = () => this.setState({drawerOpen: !this.state.open})
 
+  handleClose = () => this.setState({drawerOpen: false})
 
+  renderResults = (style) =>{
+    return this.state.isLoaded
+    ? (
+      <Resuts 
+        style={style}
+        data={this.state.restaurants}
+      />
+    )
+    :''
+  }
+
+  renderSearch = () =>{
+    return (
+      <Search
+        category={this.state.categories}
+        categoryClicked={this.handleCategoryClicked}
+        value={this.state.value}
+
+      />
+    )
+  }
 
   render() {
 
@@ -102,7 +155,7 @@ class App extends Component {
         width: '95%',
         position: 'relative',
         left: '2.5%',
-        
+        padding: '5px, 0px'
       },
       cardText: {
         marginLeft: 0
@@ -112,21 +165,26 @@ class App extends Component {
     return (
       <MuiThemeProvider>
       <div className="App">
+          <GrubBar
+            toggle={this.handleToggle}
+            open={this.state.drawerOpen}
+            change={(drawerOpen)=>this.setState({drawerOpen})}
+            close={this.handleClose}
+            category={this.state.categories}
+            categoryClicked={this.handleCategoryClicked}
+            value={this.state.value}
+            cuisines={this.state.cuisines}
+            handleCategoryClicked={this.handleCategoryClicked}
+            cuisineDesired={this.state.cuisineDesired}
+            handleNewSearchCall={this.handleCategoryClicked}
+          />
         <header className="App-header">
           <h1 className="App-title">Where to Grub?</h1>
+          {/* {this.renderSearch()} */}
         </header>
         <section>
           <Paper style={stylesheet.paper} zDepth={4}>
-            {/* <Search
-              category={this.state.categories}
-              categoryClicked={this.handleCategoryClicked}
-              value={this.state.value}
-            /> */}
-            <Resuts 
-              style={stylesheet.results}
-              data={this.state.restaurants}
-              
-            />
+            {this.renderResults(stylesheet.results)}
           </Paper>
         </section>
       </div>
