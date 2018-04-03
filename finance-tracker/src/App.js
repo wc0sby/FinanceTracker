@@ -15,7 +15,7 @@ class App extends Component {
     this.state = {restaurants: [],
       values: '',
       isLoaded: false,
-      drawerOpen: true,
+      drawerOpen: false,
       lat: '',
       long: '',
       cuisines: [],
@@ -86,6 +86,7 @@ class App extends Component {
   }
 
   handleNewSearchCall = () =>{
+    console.log(this.state)
     const apiHeaders = new Headers()
     apiHeaders.append('user-key', '0ceda440b15e277c481abff59a44f63f')
     // fetch('https://developers.zomato.com/api/v2.1/cuisines?city_id=278',
@@ -110,6 +111,7 @@ class App extends Component {
         })
       }
     )
+    this.setState({drawerOpen: false})
   }
 
   handleCategoryClicked = (event, index, value) =>{this.setState({cuisineDesired: index, cuisineID: this.state.cuisines[index].cuisine_id})}
@@ -127,17 +129,6 @@ class App extends Component {
       />
     )
     :''
-  }
-
-  renderSearch = () =>{
-    return (
-      <Search
-        category={this.state.categories}
-        categoryClicked={this.handleCategoryClicked}
-        value={this.state.value}
-
-      />
-    )
   }
 
   render() {
@@ -162,8 +153,14 @@ class App extends Component {
       }
     }
 
+    const muiTheme = getMuiTheme({
+      appBar: {
+        backgroundColor: 'red'
+      }
+    })
+
     return (
-      <MuiThemeProvider>
+      <MuiThemeProvider muiTheme={muiTheme}>
       <div className="App">
           <GrubBar
             toggle={this.handleToggle}
@@ -176,7 +173,7 @@ class App extends Component {
             cuisines={this.state.cuisines}
             handleCategoryClicked={this.handleCategoryClicked}
             cuisineDesired={this.state.cuisineDesired}
-            handleNewSearchCall={this.handleCategoryClicked}
+            handleNewSearchCall={this.handleNewSearchCall}
           />
         <header className="App-header">
           <h1 className="App-title">Where to Grub?</h1>

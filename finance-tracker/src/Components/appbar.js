@@ -16,7 +16,7 @@ export default class GrubBar extends Component {
         formBttn={this.props.formBttn}
         handleCategoryClicked={this.props.handleCategoryClicked}
         cuisineDesired={this.props.cuisineDesired}
-        handleNewSearchCall={this.props.handleCategoryClicked}
+        handleNewSearchCall={this.props.handleNewSearchCall}
       />
     )
   }

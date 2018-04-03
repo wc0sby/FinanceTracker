@@ -103,7 +103,7 @@ export default class Search extends Component {
             <RaisedButton 
               label="Search"
               secondary={true}
-              onClick={this.props.handleCategoryClicked}
+              onClick={this.props.handleNewSearchCall}
             />
           </section>
         </form>
