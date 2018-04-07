@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import TransitionGroup from 'react-transition-group/TransitionGroup'
 import './Styles/App.css';
 import Resuts from './Components/results';
 import Search from './Components/form';
 import GrubBar from './Components/appbar';
+import InfoCard from './Components/infoCard';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -20,7 +22,8 @@ class App extends Component {
       long: '',
       cuisines: [],
       cuisineID: 168,
-      cuisineDesired: 0
+      cuisineDesired: 0,
+      clickedRest: 0
     }
   }
 
@@ -36,16 +39,11 @@ class App extends Component {
           const geoLoc = result.results[0].geometry.location
           this.setState({lat: geoLoc.lat, long: geoLoc.lng})
           
-          // location.getCurrentPosition((position)=>{
-            //   console.log(position.coords.latitude, position.coords.longitude)
-            //   this.setState({lat: position.coords.latitude, long: position.coords.longitude})
-            // })
         })
       .then(
           (data)=> {   
             
       apiHeaders.append('user-key', '0ceda440b15e277c481abff59a44f63f')
-      // fetch('https://developers.zomato.com/api/v2.1/cuisines?city_id=278',
       fetch(`https://developers.zomato.com/api/v2.1/search?count=100&lat=${this.state.lat}&lon=${this.state.long}&cuisines=${this.state.cuisineID}&sort=rating&order=desc`,
       {headers: apiHeaders})
       .then(res => res.json())
@@ -111,7 +109,7 @@ class App extends Component {
         })
       }
     )
-    this.setState({drawerOpen: false})
+    this.setState({drawerOpen: false, clickedRest: 0})
   }
 
   handleCategoryClicked = (event, index, value) =>{this.setState({cuisineDesired: index, cuisineID: this.state.cuisines[index].cuisine_id})}
@@ -120,12 +118,15 @@ class App extends Component {
 
   handleClose = () => this.setState({drawerOpen: false})
 
+  handleID = (id) => {this.setState({clickedRest: id})}
+
   renderResults = (style) =>{
     return this.state.isLoaded
     ? (
       <Resuts 
         style={style}
         data={this.state.restaurants}
+        handleID={this.handleID}
       />
     )
     :''
@@ -146,10 +147,17 @@ class App extends Component {
         width: '95%',
         position: 'relative',
         left: '2.5%',
-        padding: '5px, 0px'
+        padding: '5px, 0px',
       },
-      cardText: {
-        marginLeft: 0
+      infoPaper: {
+        left: '350px',
+        top: '20%',
+        width: '32%',
+        height: '65%',
+        position: 'fixed',
+        textAlign: 'right',
+        backgroundColor: 'grey',
+        opacity: '.8'
       }
     }
 
@@ -177,8 +185,17 @@ class App extends Component {
           />
         <header className="App-header">
           <h1 className="App-title">Let's Grub!</h1>
-          {/* {this.renderSearch()} */}
         </header>
+        <TransitionGroup>
+          <Paper
+          style={stylesheet.infoPaper}
+          >
+            <InfoCard
+              style={stylesheet.results}
+              data={this.state.restaurants[this.state.clickedRest]}
+            />
+          </Paper>
+        </TransitionGroup>
         <section>
           <Paper style={stylesheet.paper} zDepth={4}>
             {this.renderResults(stylesheet.results)}

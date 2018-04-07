@@ -78,7 +78,8 @@ export default class Results extends Component{
               style={this.props.style}
             >
               <CardMedia 
-                actAsExpander={true}
+                // actAsExpander={true}
+                onClick={()=>this.props.handleID(key)}
                 style={stylesheet.card}
                 overlay={<CardTitle title={restaurant.name} subtitle={this.renderSubtitles(restaurant)}/>}
               >
