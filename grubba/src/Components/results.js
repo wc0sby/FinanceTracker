@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import {Card, CardText, CardTitle, CardMedia} from 'material-ui/Card';
+import {Card, CardText, CardTitle, CardMedia, CardHeader} from 'material-ui/Card';
 import Rating from 'react-rating'
+import Divider from 'material-ui/Divider';
 
 
 export default class Results extends Component{
@@ -15,9 +16,6 @@ export default class Results extends Component{
         display:'flex',
         justifyContent:'space-between'
       },
-      article: {
-
-      }
     }
 
     return <section style={styles.section}>
@@ -39,33 +37,18 @@ export default class Results extends Component{
     </section>
   }
 
-  renderCardContent = (data) =>{
-    return(
-      <section>
-        <article>
-          <div>
-            <a href={data.url}>{data.name}</a>
-          </div>
-          <div>
-            <a href={data.menu_url}>{`${data.name}'s Menu`}</a>
-          </div>
-          <div>
-            <p>{`$ for 2 $${data.average_cost_for_two}`}</p>
-          </div>
-        </article>
-        <article>
-        </article>
-      </section>
-    )
-  }
 
   render(){
 
     const stylesheet = {
       card: {
-        height: '300px',
-        backgroundColor: 'rgba(204, 91, 91, 0.842)',
-      }
+        height: !this.props.data.featured_image?'280px':'auto'
+        // padding: '5px, 5px'
+        // backgroundColor: 'rgba(204, 91, 91, 0.842)',
+      },
+      // divider: {
+      //   margin: '10px'
+      // }
     }
 
 
@@ -73,24 +56,23 @@ export default class Results extends Component{
       <div>
         {this.props.data.map((restaurant, key)=>{
           return (
-            <Card 
-              key={key} 
-              style={this.props.style}
-            >
-              <CardMedia 
-                // actAsExpander={true}
-                onClick={()=>this.props.handleID(key)}
-                style={stylesheet.card}
-                overlay={<CardTitle title={restaurant.name} subtitle={this.renderSubtitles(restaurant)}/>}
+            <div>
+              <Card 
+                key={key} 
+                style={this.props.style}
               >
-                <img src={restaurant.featured_image} alt='' /> 
-              </CardMedia>
-
-              <CardText expandable={true}>
-                {this.renderCardContent(restaurant)}
-
-              </CardText>              
-            </Card>
+ 
+                <CardMedia 
+                  // actAsExpander={true}
+                  onClick={()=>this.props.handleID(key)}
+                  style={stylesheet.card}
+                  overlay={<CardTitle title={restaurant.name} subtitle={this.renderSubtitles(restaurant)}/>}
+                >
+                  <img src={restaurant.featured_image} alt='' /> 
+                </CardMedia>           
+              </Card>
+              <Divider/>
+            </div>
             )
           })
         }

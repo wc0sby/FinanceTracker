@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import TransitionGroup from 'react-transition-group/TransitionGroup'
+import {CSSTransitionGroup} from 'react-transition-group';
 import './Styles/App.css';
 import Resuts from './Components/results';
 import Search from './Components/form';
@@ -9,6 +9,7 @@ import InfoCard from './Components/infoCard';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Paper from 'material-ui/Paper'
+import CircularProgress from 'material-ui/CircularProgress';
 
 
 class App extends Component {
@@ -18,6 +19,7 @@ class App extends Component {
       values: '',
       isLoaded: false,
       drawerOpen: false,
+      infoOpen: false,
       lat: '',
       long: '',
       cuisines: [],
@@ -86,6 +88,7 @@ class App extends Component {
   handleNewSearchCall = () =>{
     console.log(this.state)
     const apiHeaders = new Headers()
+    this.setState({isLoaded:false})
     apiHeaders.append('user-key', '0ceda440b15e277c481abff59a44f63f')
     // fetch('https://developers.zomato.com/api/v2.1/cuisines?city_id=278',
     fetch(`https://developers.zomato.com/api/v2.1/search?count=100&lat=${this.state.lat}&lon=${this.state.long}&cuisines=${this.state.cuisineID}&sort=rating&order=desc`,
@@ -116,9 +119,37 @@ class App extends Component {
 
   handleToggle = () => this.setState({drawerOpen: !this.state.open})
 
-  handleClose = () => this.setState({drawerOpen: false})
+  handleID = (id) => {this.setState({clickedRest: id, infoOpen: !this.state.infoOpen})}
 
-  handleID = (id) => {this.setState({clickedRest: id})}
+  // handleInfo = () => {this.setState({infoOpen: this.state.open})}
+
+
+  renderLoadBar = () =>{
+    return(
+      <div style={{margin: '50%'}}>
+        <CircularProgress size={80} thickness={5} />
+      </div>
+    )
+  }
+
+  renderAppBar = () =>{
+    return(
+    <GrubBar
+      toggle={this.handleToggle}
+      open={this.state.drawerOpen}
+      change={(drawerOpen)=>this.setState({drawerOpen})}
+      close={this.handleClose}
+      category={this.state.categories}
+      categoryClicked={this.handleCategoryClicked}
+      value={this.state.value}
+      cuisines={this.state.cuisines}
+      handleCategoryClicked={this.handleCategoryClicked}
+      cuisineDesired={this.state.cuisineDesired}
+      handleNewSearchCall={this.handleNewSearchCall}
+    />
+    )
+  }
+
 
   renderResults = (style) =>{
     return this.state.isLoaded
@@ -132,6 +163,22 @@ class App extends Component {
     :''
   }
 
+  renderInfoCard = (stylesheet) => {
+    return(
+    <Paper
+      style={stylesheet.infoPaper}
+      id='infobar'
+      className={this.state.infoOpen?'slideIn':'slideOut'}
+      zDepth={4}
+      >
+        <InfoCard
+          style={stylesheet.results}
+          data={this.state.restaurants[this.state.clickedRest]}
+        />
+      </Paper>
+    )
+  }
+
   render() {
 
     const stylesheet = {
@@ -141,22 +188,21 @@ class App extends Component {
         width: '32%',
         height: '65%',
         position: 'fixed',
-        overflowY: 'scroll'
+        overflowY: 'scroll',
       },
       results: {
         width: '95%',
+        height: !this.state.restaurants.featured_image?'280px':'auto',
         position: 'relative',
         left: '2.5%',
-        padding: '5px, 0px',
+        padding: '25px, 25px',
       },
       infoPaper: {
-        left: '350px',
+        position: 'fixed',
         top: '20%',
         width: '32%',
-        height: '65%',
-        position: 'fixed',
         textAlign: 'right',
-        backgroundColor: 'grey',
+        backgroundColor: 'grey, white',
         opacity: '.8'
       }
     }
@@ -169,36 +215,19 @@ class App extends Component {
 
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
-      <div className="App">
-          <GrubBar
-            toggle={this.handleToggle}
-            open={this.state.drawerOpen}
-            change={(drawerOpen)=>this.setState({drawerOpen})}
-            close={this.handleClose}
-            category={this.state.categories}
-            categoryClicked={this.handleCategoryClicked}
-            value={this.state.value}
-            cuisines={this.state.cuisines}
-            handleCategoryClicked={this.handleCategoryClicked}
-            cuisineDesired={this.state.cuisineDesired}
-            handleNewSearchCall={this.handleNewSearchCall}
-          />
+
+        <div className="App" onClick={this.handleInfo}>
+        {this.renderAppBar()}
+
         <header className="App-header">
-          <h1 className="App-title">Let's Grub!</h1>
+          <h1 className="App-title">Let's Grubbus Some Food!</h1>
         </header>
-        <TransitionGroup>
-          <Paper
-          style={stylesheet.infoPaper}
-          >
-            <InfoCard
-              style={stylesheet.results}
-              data={this.state.restaurants[this.state.clickedRest]}
-            />
-          </Paper>
-        </TransitionGroup>
+
+        {this.renderInfoCard(stylesheet)}
+
         <section>
           <Paper style={stylesheet.paper} zDepth={4}>
-            {this.renderResults(stylesheet.results)}
+            {this.state.isLoaded?this.renderResults(stylesheet.results):this.renderLoadBar()}
           </Paper>
         </section>
       </div>

@@ -16,12 +16,16 @@
 
 }
 
-.App-title {
-  font-size: 1.5em;
+#infobar {
+  /* width: 420px; */
+  transform: translateX(5px);
+  transition: transform ease-in 10000ms;
 }
-
-.App-intro {
-  font-size: large;
+#infobar.slideIn {
+  transform: translateX(100%);
+}
+#infobar.slideOut {
+  transform: translateX(50px);
 }
 
 @keyframes App-logo-spin {

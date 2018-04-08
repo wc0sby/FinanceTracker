@@ -17,27 +17,6 @@ export default class Search extends Component {
     city: 'Austin'
   }
 
-  // componentDidMount(){
-  //   const apiHeaders = new Headers()
-  //   apiHeaders.append('user-key', '0ceda440b15e277c481abff59a44f63f')
-  //     fetch(`https://developers.zomato.com/api/v2.1/cuisines?lat=${this.props.lat}&lon=${this.props.long}`,
-  //       {headers:apiHeaders})
-  //     .then(res=>res.json())
-  //     .then(
-  //       (result)=>{
-  //         console.log(result)
-  //         const cuisineArr = []
-  //         result.cuisines.forEach((cuisine)=>{
-  //           cuisineArr.push(cuisine.cuisine.cuisine_name)
-  //         })
-  //         this.setState({cuisines: cuisineArr})
-  //       }
-  //     )}
-    
-
-
-  // handleCategoryClicked = (event, index, value) =>{this.setState({cuisineDesired: index})}
-
   handleTextInputUpdates = (e) =>{
     this.setState({city: e.target.value})
   }
@@ -49,7 +28,6 @@ export default class Search extends Component {
     
     return <DropDownMenu 
             value={this.props.cuisineDesired}
-            // value={index ? console.log(index.cuisine_id) : ''}      
             onChange={this.props.handleCategoryClicked}>
       { cuisines
         ?(cuisines.map((cuisine, key)=>{
@@ -96,6 +74,7 @@ export default class Search extends Component {
               style={stylesheet.input}
             />
           </section>
+          <label>Choose Cuisine:</label>
           <section style={stylesheet.text}>
             {this.renderCategories()}
           </section>

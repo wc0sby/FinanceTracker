@@ -8,10 +8,11 @@ export default class InfoCard extends Component {
     const data = this.props.data
     const stylesheet = {
       content: {
-        marginLeft: '20%',
+        marginLeft: '25%',
       },
       paragraph: {
-        textAlign: 'left'
+        textAlign: 'left',
+        marginLeft: '20%'
       }
     }
     return data
@@ -30,7 +31,8 @@ export default class InfoCard extends Component {
             </div>
           </CardText>
           <CardActions>
-            <FlatButton label="Website" href={data.url}/>
+            <FlatButton label="Events" href={data.events_url}/>
+            <FlatButton label="Zomato" href={data.url}/>
             <FlatButton label="Menu" href={data.menu_url}/>
           </CardActions>
       </Card>)

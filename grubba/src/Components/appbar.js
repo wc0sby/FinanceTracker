@@ -32,7 +32,7 @@ export default class GrubBar extends Component {
     return(
       <div>
       <AppBar
-        title="Grubba"
+        title="Grubbus"
         onLeftIconButtonClick={this.props.toggle}
         style={stylesheet.bar}>
       </AppBar>
